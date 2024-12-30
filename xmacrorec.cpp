@@ -36,6 +36,8 @@
 /***************************************************************************** 
  * Includes
  ****************************************************************************/
+#include <iostream>
+#include <iomanip>
 #include <stdio.h>		
 #include <stdlib.h>
 #include <X11/Xlibint.h>
@@ -45,18 +47,6 @@
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
-
-/***************************************************************************** 
- * What iostream do we have?
- ****************************************************************************/
-#define HAVE_IOSTREAM
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#include <iomanip>
-#else
-#include <iostream.h>
-#include <iomanip.h>
-#endif
 
 #define PROG "xmacrorec"
 
