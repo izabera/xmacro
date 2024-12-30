@@ -42,6 +42,7 @@
 #include <iomanip>
 #include <stdio.h>		
 #include <stdlib.h>
+#include <time.h>
 #include <X11/Xlibint.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -228,6 +229,7 @@ Display * localDisplay () {
 	\arg int Screen - the used screen.
 */
 /****************************************************************************/
+Time previous_event;
 int findQuitKey (Display * Dpy, int Screen) { 
 
   XEvent    Event;
@@ -278,6 +280,7 @@ int findQuitKey (Display * Dpy, int Screen) {
   // show the user what was chosen
   cerr << "The chosen quit-key has the keycode: " << EKey.keycode << endl;
   
+  previous_event = EKey.time;
   // return the found key
   return EKey.keycode;
 }
@@ -311,7 +314,7 @@ int scale (const int Coordinate) {
 void eventCallback(XPointer priv, XRecordInterceptData *d)
 {
   Priv *p=(Priv *) priv;
-  unsigned int *ud4, tstamp, wroot, wevent, wchild, type, detail;
+  unsigned int *ud4, tstamp, time_diff, wroot, wevent, wchild, type, detail;
   unsigned char *ud1, type1, detail1, samescreen;
   unsigned short *ud2, seq;
   short *d2, rootx, rooty, eventx, eventy, kstate;
@@ -343,6 +346,8 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
   kstate=d2[14];
   samescreen=ud1[30];
 
+  time_diff = tstamp - previous_event;
+  previous_event = tstamp;
   if (p->Status1)
   {
 	  p->Status1--;
@@ -365,12 +370,12 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
 		DBG;
 	  if (p->mmoved)
 	  {
-		cout << "MotionNotify " << p->x << " " << p->y << endl;
+		cout << time_diff << " MotionNotify " << p->x << " " << p->y << endl;
 		p->mmoved=0;
 	  }
 	  if (p->Status2<0) p->Status2=0;
 	  p->Status2++;
-	  cout << "ButtonPress " << detail << endl;
+	  cout << time_diff << " ButtonPress " << detail << endl;
       break;
 
     case ButtonRelease:
@@ -378,12 +383,12 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
 		DBG;
 	  if (p->mmoved)
 	  {
-		cout << "MotionNotify " << p->x << " " << p->y << endl;
+		cout << time_diff << " MotionNotify " << p->x << " " << p->y << endl;
 		p->mmoved=0;
 	  }
 	  p->Status2--;
 	  if (p->Status2<0) p->Status2=0;
-	  cout << "ButtonRelease " << detail << endl;
+	  cout << time_diff << " ButtonRelease " << detail << endl;
 	  break;
 
 	case MotionNotify:
@@ -391,7 +396,7 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
 		DBG;
 	  if (p->Status2>0)
 	  {
-	  	cout << "MotionNotify " << rootx << " " << rooty << endl;
+	  	cout << time_diff << " MotionNotify " << rootx << " " << rooty << endl;
 	  	p->mmoved=0;
 	  }
 	  else p->mmoved=1;
@@ -412,10 +417,10 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
 		// send the keycode to the remote server
 		if (p->mmoved)
 		{
-			cout << "MotionNotify " << p->x << " " << p->y << endl;
+			cout << time_diff << " MotionNotify " << p->x << " " << p->y << endl;
 			p->mmoved=0;
 		}
-		cout << "KeyStrPress " << XKeysymToString(XKeycodeToKeysym(p->LocalDpy,detail,0)) << endl;
+		cout << time_diff << " KeyStrPress " << XKeysymToString(XKeycodeToKeysym(p->LocalDpy,detail,0)) << endl;
 	  }
 	  break;
 
@@ -424,10 +429,10 @@ void eventCallback(XPointer priv, XRecordInterceptData *d)
 		DBG;
 	  if (p->mmoved)
 	  {
-		cout << "MotionNotify " << p->x << " " << p->y << endl;
+		cout << time_diff << " MotionNotify " << p->x << " " << p->y << endl;
 		p->mmoved=0;
 	  }
-	  cout << "KeyStrRelease " << XKeysymToString(XKeycodeToKeysym(p->LocalDpy,detail,0)) << endl;
+	  cout << time_diff << " KeyStrRelease " << XKeysymToString(XKeycodeToKeysym(p->LocalDpy,detail,0)) << endl;
 	  break;
   }
 returning:

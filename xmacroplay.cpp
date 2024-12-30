@@ -329,6 +329,13 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
   
   while ( !cin.eof() ) {
 	cin >> ev;
+	char *p;
+	long num = strtol(ev, &p, 10);
+	if (!*p) {
+	  Delay = num;
+	  continue;
+	}
+
 	if (ev[0]=='#')
 	{
 	  cout << "Comment: " << ev << endl;
@@ -345,30 +352,35 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  cin >> b;
 	  cout << "ButtonPress: " << b << endl;
 	  XTestFakeButtonEvent ( RemoteDpy, b, True, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("ButtonRelease",ev))
 	{
 	  cin >> b;
 	  cout << "ButtonRelease: " << b << endl;
 	  XTestFakeButtonEvent ( RemoteDpy, b, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("MotionNotify",ev))
 	{
 	  cin >> x >> y;
 	  cout << "MotionNotify: " << x << " " << y << endl;
 	  XTestFakeMotionEvent ( RemoteDpy, RemoteScreen , scale ( x ), scale ( y ), Delay ); 
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeyCodePress",ev))
 	{
 	  cin >> kc;
 	  cout << "KeyPress: " << kc << endl;
 	  XTestFakeKeyEvent ( RemoteDpy, kc, True, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeyCodeRelease",ev))
 	{
 	  cin >> kc;
 	  cout << "KeyRelease: " << kc << endl;
   	  XTestFakeKeyEvent ( RemoteDpy, kc, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeySym",ev))
 	{
@@ -382,6 +394,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  XTestFakeKeyEvent ( RemoteDpy, kc, True, Delay );
 	  XFlush ( RemoteDpy );
 	  XTestFakeKeyEvent ( RemoteDpy, kc, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeySymPress",ev))
 	{
@@ -393,6 +406,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  	continue;
 	  }
 	  XTestFakeKeyEvent ( RemoteDpy, kc, True, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeySymRelease",ev))
 	{
@@ -404,6 +418,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  	continue;
 	  }
   	  XTestFakeKeyEvent ( RemoteDpy, kc, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeyStr",ev))
 	{
@@ -418,6 +433,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  XTestFakeKeyEvent ( RemoteDpy, kc, True, Delay );
 	  XFlush ( RemoteDpy );
 	  XTestFakeKeyEvent ( RemoteDpy, kc, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeyStrPress",ev))
 	{
@@ -430,6 +446,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  	continue;
 	  }
 	  XTestFakeKeyEvent ( RemoteDpy, kc, True, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("KeyStrRelease",ev))
 	{
@@ -442,6 +459,7 @@ void eventLoop (Display * RemoteDpy, int RemoteScreen) {
 	  	continue;
 	  }
   	  XTestFakeKeyEvent ( RemoteDpy, kc, False, Delay );
+	  Delay = DefaultDelay;
 	}
 	else if (!strcasecmp("String",ev))
 	{
